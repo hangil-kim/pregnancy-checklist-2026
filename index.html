@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>임신·출산 공공지원 + 금융 체크리스트 (2026)</title>
+<style>
+  :root {
+    --pink: #f472b6; --pink-light: #fdf2f8; --pink-mid: #fbcfe8;
+    --green: #10b981; --green-light: #ecfdf5;
+    --orange: #f59e0b; --blue: #3b82f6;
+    --red: #ef4444; --gray: #6b7280; --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif; background:#fdf2f8; color:#1f2937; line-height:1.7; font-size:15px; }
+  .header { background:linear-gradient(135deg,#f472b6,#a855f7); color:white; padding:32px 24px; text-align:center; }
+  .header h1 { font-size:22px; font-weight:700; margin-bottom:6px; }
+  .header p { font-size:13px; opacity:.85; }
+  .container { max-width:800px; margin:0 auto; padding:20px 16px 60px; }
+  .section { background:white; border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 1px 6px rgba(0,0,0,.07); }
+  .section-title { font-size:16px; font-weight:700; margin-bottom:14px; padding-bottom:10px; border-bottom:2px solid var(--pink-mid); color:#be185d; display:flex; align-items:center; gap:8px; }
+  .family-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .family-item { background:var(--pink-light); border-radius:10px; padding:10px 14px; }
+  .family-label { font-size:11px; color:var(--gray); font-weight:500; display:block; }
+  .family-value { font-size:14px; font-weight:600; color:#be185d; display:block; }
+  .deadline-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .deadline-table th { background:var(--pink-mid); padding:8px 10px; text-align:left; font-weight:600; font-size:12px; color:#9d174d; }
+  .deadline-table td { padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+  .deadline-table tr:last-child td { border-bottom:none; }
+  .deadline-table tr:hover td { background:var(--pink-light); }
+  .done-row td { color:#9ca3af; text-decoration:line-through; }
+  .done-badge { background:var(--green); color:white; font-size:11px; padding:2px 7px; border-radius:20px; white-space:nowrap; text-decoration:none; display:inline-block; }
+  .urgent { color:var(--red); font-weight:700; }
+  .stage { background:white; border-radius:16px; margin-bottom:14px; box-shadow:0 1px 6px rgba(0,0,0,.07); overflow:hidden; }
+  .stage-header { padding:14px 20px; font-weight:700; font-size:15px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; user-select:none; }
+  .stage-body { padding:0 20px 16px; }
+  .stage-1 .stage-header { background:#fce7f3; color:#9d174d; }
+  .stage-2 .stage-header { background:#fef3c7; color:#92400e; }
+  .stage-3 .stage-header { background:#dbeafe; color:#1e40af; }
+  .stage-4 .stage-header { background:#d1fae5; color:#065f46; }
+  .stage-5 .stage-header { background:#ede9fe; color:#5b21b6; }
+  .stage-6 .stage-header { background:#fee2e2; color:#991b1b; }
+  .stage-7 .stage-header { background:#ecfdf5; color:#065f46; }
+  .stage-8 .stage-header { background:#f0f9ff; color:#0c4a6e; }
+  .stage-9 .stage-header { background:#fdf4ff; color:#6b21a8; }
+  .check-item { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid #f3f4f6; cursor:pointer; }
+  .check-item:last-child { border-bottom:none; }
+  .check-item input[type=checkbox] { display:none; }
+  .check-box { width:22px; height:22px; min-width:22px; border:2px solid #d1d5db; border-radius:6px; display:flex; align-items:center; justify-content:center; margin-top:2px; transition:all .15s; font-size:13px; }
+  .check-item.checked .check-box { background:var(--green); border-color:var(--green); color:white; }
+  .check-item.checked .check-title { text-decoration:line-through; color:#9ca3af; }
+  .check-item.checked .check-detail { color:#d1d5db; }
+  .check-content { flex:1; }
+  .check-title { font-weight:600; font-size:14px; margin-bottom:4px; }
+  .check-detail { font-size:13px; color:#6b7280; padding-left:16px; }
+  .check-detail li { margin-bottom:2px; }
+  .badge-warn { display:inline-block; background:#fef3c7; color:#92400e; font-size:11px; padding:1px 7px; border-radius:20px; margin-left:6px; font-weight:600; }
+  .badge-done { display:inline-block; background:var(--green-light); color:var(--green); font-size:11px; padding:1px 7px; border-radius:20px; margin-left:6px; font-weight:600; }
+  .note-box { background:#fffbeb; border-left:3px solid var(--orange); border-radius:0 8px 8px 0; padding:10px 14px; font-size:13px; color:#78350f; margin:10px 0; }
+  .record-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .record-table th { background:#f3f4f6; padding:8px 10px; text-align:left; font-size:12px; font-weight:600; }
+  .record-table td { padding:8px 10px; border-bottom:1px solid var(--border); }
+  .link-list { list-style:none; }
+  .link-list li { padding:7px 0; border-bottom:1px solid #f3f4f6; font-size:13px; }
+  .link-list li:last-child { border-bottom:none; }
+  .link-list a { color:var(--blue); text-decoration:none; }
+  .link-list a:hover { text-decoration:underline; }
+  .progress-bar-wrap { background:#f3f4f6; border-radius:99px; height:8px; margin:8px 0 4px; }
+  .progress-bar { background:linear-gradient(90deg,#f472b6,#a855f7); height:8px; border-radius:99px; transition:width .3s; }
+  .progress-text { font-size:12px; color:var(--gray); text-align:right; }
+  .chevron { transition:transform .2s; }
+  .collapsed .chevron { transform:rotate(-90deg); }
+  .collapsed .stage-body { display:none; }
+  .sub-title { padding:0 4px; margin:20px 0 10px; font-size:17px; font-weight:700; color:#be185d; }
+  @media(max-width:600px) { .family-grid { grid-template-columns:1fr; } .deadline-table { font-size:12px; } .header h1 { font-size:18px; } }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🍼 임신·출산 공공지원 + 금융 체크리스트</h1>
+  <p>2026년 기준 · 서울 광진구 · 출산 예정일 2026.12.09</p>
+</div>
+<div class="container">
+
+  <div class="section">
+    <div class="section-title">📊 전체 진행률</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+    <div class="progress-text" id="progressText">0 / 0 완료</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">👨‍👩‍👧 우리 가족 정보</div>
+    <div class="family-grid">
+      <div class="family-item"><span class="family-label">출산 예정일</span><span class="family-value">2026.12.09</span></div>
+      <div class="family-item"><span class="family-label">거주지</span><span class="family-value">서울 광진구</span></div>
+      <div class="family-item"><span class="family-label">태아 수</span><span class="family-value">단태아</span></div>
+      <div class="family-item"><span class="family-label">산모 나이</span><span class="family-value">만 33세</span></div>
+      <div class="family-item"><span class="family-label">직장 형태</span><span class="family-value">직장인</span></div>
+      <div class="family-item"><span class="family-label">분만 방법</span><span class="family-value">미정</span></div>
+      <div class="family-item"><span class="family-label">주택 보유</span><span class="family-value">1주택</span></div>
+      <div class="family-item"><span class="family-label">부부합산 연소득</span><span class="family-value">1.1억</span></div>
+      <div class="family-item"><span class="family-label">고위험 임산부</span><span class="family-value">아니오</span></div>
+      <div class="family-item"><span class="family-label">첫째 여부</span><span class="family-value">첫째</span></div>
+      <div class="family-item"><span class="family-label">주택 구매일</span><span class="family-value">2025.04.30</span></div>
+      <div class="family-item"><span class="family-label">주택 실거래가</span><span class="family-value">7억원</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">⏰ 놓치면 안 되는 핵심 데드라인</div>
+    <table class="deadline-table">
+      <thead><tr><th>시기</th><th>항목</th><th>금액/혜택</th><th>신청처</th></tr></thead>
+      <tbody>
+        <tr><td><strong>임신 8~10주</strong></td><td>태아/어린이보험 가입</td><td>민간보험</td><td>보험사 (기형아 검사 전!)</td></tr>
+        <tr class="done-row"><td>임신 22주 전</td><td>우체국 보험 무료 신청</td><td>최대 100만원</td><td><span class="done-badge">✅ 04.14 완료</span></td></tr>
+        <tr class="done-row"><td>임신 확인 즉시</td><td>국민행복카드 신청</td><td>100만원</td><td><span class="done-badge">✅ 04.14 완료</span></td></tr>
+        <tr><td>임신 12주~</td><td>서울시 교통비 지원</td><td>70만원</td><td>서울맘케어 앱</td></tr>
+        <tr><td class="urgent">출생 신고 시</td><td>첫만남이용권+부모급여+아동수당 원스톱</td><td>200만원+월정액</td><td>정부24 / 주민센터</td></tr>
+        <tr><td class="urgent">출생 후 2개월 이내</td><td>서울시 산후조리경비</td><td>100만원</td><td>서울맘케어 / 동사무소</td></tr>
+        <tr><td class="urgent">출생 후 2개월 이내</td><td>산모·신생아 건강관리사 (산후도우미)</td><td>본인부담금 일부</td><td>복지로 / 보건소</td></tr>
+        <tr><td>출생 후 빠르게</td><td>새마을금고 걸음마적금 (5만 계좌 한정)</td><td>최고 연 12%</td><td>새마을금고</td></tr>
+        <tr><td>출생 후 2년 이내</td><td>신생아 특례대출</td><td>연 1%대~</td><td>주택도시기금/은행</td></tr>
+        <tr><td>연말정산</td><td>산후조리원 세액공제</td><td>최대 30만원 환급</td><td>연말정산 (영수증 보관!)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sub-title">✅ 시기별 타임테이블 &amp; 체크리스트</div>
+
+  <div class="stage stage-1" id="stage1">
+    <div class="stage-header" onclick="toggleStage('stage1')"><span>1단계 · 임신 확인 직후 (즉시)</span><span class="chevron">▾</span></div>
+    <div class="stage-body">
+      <label class="check-item checked" data-id="c1"><input type="checkbox" checked><div class="check-box">✓</div><div class="check-content"><div class="check-title">국민행복카드 발급 <span class="badge-done">✅ 2026.04.14 완료</span></div><ul class="check-detail"><li>금액: 100만원</li><li>사용처: 산부인과, 약국, 임신·출산 관련 검사비</li><li>사용기간: 임신확인 ~ 출생일 + 2년</li></ul></div></label>
+      <label class="check-item" data-id="c2"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">보건소 방문 — 임산부 등록 + 무료 지원품 수령</div><ul class="check-detail"><li>엽산제: 임신 3개월까지 무료 지급</li><li>위생용품 세트: 항균 손세정제·치약·칫솔 등 4종 무료 제공</li><li>신청: 보건소 방문 (임신확인서 지참)</li></ul></div></label>
+      <label class="check-item" data-id="c3"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">마미톡 앱 다운로드</div><ul class="check-detail"><li>임신 주수 관리, 태아 성장 정보, 산부인과 예약, 커뮤니티</li><li>iOS / Android 검색: 마미톡</li></ul></div></label>
+      <label class="check-item" data-id="c4"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">서울맘케어 앱 다운로드</div><ul class="check-detail"><li>서울시 교통비 지원(12주~) 및 산후조리경비 신청에 필요</li><li>iOS / Android 검색: 서울맘케어</li></ul></div></label>
+      <label class="check-item" data-id="c5"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">KTX/SRT 임산부 할인 신청 (맘편한 KTX)</div><ul class="check-detail"><li>KTX 40% / SRT 30% 일반석 감면, 동반 1인까지 적용</li><li>사용기간: 임신확인 ~ 출생일 + 1년 / 신청: 정부24 or 보건소</li></ul></div></label>
+    </div>
+  </div>
+
+  <div class="stage stage-2" id="stage2">
+    <div class="stage-header" onclick="toggleStage('stage2')"><span>2단계 · 임신 8~10주 — 태아보험 가입 ⚠️ 기형아 검사 전 필수!</span><span class="chevron">▾</span></div>
+    <div class="stage-body">
+      <div class="note-box">⚠️ 기형아 검사(10~12주) 결과 전에 반드시 가입 — 이상 소견 후 가입 거절 또는 부담보 조건 부과 가능</div>
+      <label class="check-item" data-id="c6"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">태아/어린이보험 가입 (민간)</div><ul class="check-detail"><li>태아 때 가입해야 선천성 질환·신생아 질환 폭넓게 보장</li><li>출생 후 어린이보험으로 자동 전환 / 여러 보험사 비교 후 결정</li><li>기형아 검사: 1차(NT+혈액) 10~12주 / 2차(쿼드) 15~20주</li></ul></div></label>
+    </div>
+  </div>
+
+  <div class="stage stage-3" id="stage3">
+    <div class="stage-header" onclick="toggleStage('stage3')"><span>3단계 · 임신 12주~22주</span><span class="chevron">▾</span></div>
+    <div class="stage-body">
+      <label class="check-item checked" data-id="c7"><input type="checkbox" checked><div class="check-box">✓</div><div class="check-content"><div class="check-title">우체국 보험 무료 신청 <span class="badge-done">✅ 2026.04.14 완료</span></div><ul class="check-detail"><li>태아·임산부 질환 특약 포함, 10년 만기, 최대 100만원</li></ul></div></label>
+      <label class="check-item" data-id="c8"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">보건소 — 철분제 수령</div><ul class="check-detail"><li>16주부터 출산까지 무료 지급 / 보건소 방문 (산모수첩 지참)</li></ul></div></label>
+      <label class="check-item" data-id="c9"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">산후조리원 예약 <span class="badge-warn">⚠️ 20주 이전 마감 많음</span></div><ul class="check-detail"><li>위치, 1인실/다인실, 비용, 신생아실 운영, 모유수유 지원 여부 확인</li><li>영수증 보관 필수 (연말정산 세액공제)</li></ul></div></label>
+      <label class="check-item" data-id="c10"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">서울시 교통비 지원</div><ul class="check-detail"><li>70만원 바우처 (대중교통·철도·택시·주유비)</li><li>사용기간: 임신 12주 ~ 출산일 + 3개월 / 서울맘케어 앱 신청</li></ul></div></label>
+    </div>
+  </div>
+
+  <div class="stage stage-4" id="stage4">
+    <div class="stage-header" onclick="toggleStage('stage4')"><span>4단계 · 임신 24주 이후</span><span class="chevron">▾</span></div>
+    <div class="stage-body">
+      <label class="check-item" data-id="c11"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">태동검사비용 환급 — 1회 (만 33세, 35세 미만)</div><ul class="check-detail"><li>비급여 태동검사 비용 환급</li><li>신청: 건강보험공단 문의 or 국민행복카드 결제 후 확인</li></ul></div></label>
+    </div>
+  </div>
+
+  <div class="stage stage-5" id="stage5">
+    <div class="stage-header" onclick="toggleStage('stage5')"><span>5단계 · 출생신고 시 원스톱 처리 🌟</span><span class="chevron">▾</span></div>
+    <div class="stage-body">
+      <div class="note-box">행복출산 원스톱: 주민센터(오프라인) 또는 정부24(온라인)에서 한 번에 신청</div>
+      <label class="check-item" data-id="c12"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">첫만남이용권 — 첫째 200만원</div><ul class="check-detail"><li>국민행복카드 지급 / 출생일 + 1년 / 레저·유흥·면세점·상품권 제외</li></ul></div></label>
+      <label class="check-item" data-id="c13"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">부모급여</div><ul class="check-detail"><li>0~11개월: 월 100만원 / 12~23개월: 월 50만원 / 부모 계좌 현금 지급</li></ul></div></label>
+      <label class="check-item" data-id="c14"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">아동수당</div><ul class="check-detail"><li>월 10만원 (서울·수도권) / 만 8세까지 → 2030년 만 13세로 확대</li><li>자녀 계좌 지급 시 증여세 면제!</li></ul></div></label>
+      <label class="check-item" data-id="c15"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">지자체 출산지원금 (광진구)</div><ul class="check-detail"><li>광진구청 또는 주민센터 직접 문의하여 지원 항목·금액 확인</li></ul></div></label>
+    </div>
+  </div>
+
+  <div class="stage stage-6" id="stage6">
+    <div class="stage-header" onclick="toggleStage('stage6')"><span>6단계 · 출생 후 2개월 이내 ⚠️</span><span class="chevron">▾</span></div>
+    <div class="stage-body">
+      <label class="check-item" data-id="c16"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">서울시 산후조리경비 지원 <span class="badge-warn">⚠️ 2개월 이내</span></div><ul class="check-detail"><li>100만원 바우처 / 국민행복카드와 다른 카드사로 발급 추천</li><li>가능: 산모신생아 건강관리 본인부담금·의약품·건강관리 식품·산후 운동</li><li>불가: 산후조리원 기본비용 직접 결제 X</li><li>신청: 서울맘케어 앱 or 동사무소</li></ul></div></label>
+      <label class="check-item" data-id="c17"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">산모·신생아 건강관리사 (산후도우미) <span class="badge-warn">⚠️ 60일 이내</span></div><ul class="check-detail"><li>전문 건강관리사 가정 방문, 산모 회복·신생아 돌봄 (단태아 최대 20일)</li><li>소득기준 150% 이하 우선 / 초과도 본인부담금 내고 이용 가능</li><li>신청: 복지로(bokjiro.go.kr) or 보건소</li></ul></div></label>
+      <label class="check-item" data-id="c18"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">한전 전기세 감면</div><ul class="check-detail"><li>월 30% 감면 (최대 16,000원) / 출생일 + 3년간</li><li>신청: 한전 ON 사이트 → 출생증명서 첨부</li></ul></div></label>
+    </div>
+  </div>
+
+  <div class="stage stage-7" id="stage7">
+    <div class="stage-header" onclick="toggleStage('stage7')"><span>7단계 · 출생 후 — 금융 상품 챙기기 💰</span><span class="chevron">▾</span></div>
+    <div class="stage-body">
+      <label class="check-item" data-id="c19"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">새마을금고 걸음마적금 <span class="badge-warn">⚠️ 5만 계좌 한정</span></div><ul class="check-detail"><li>최고 연 12% (1년 만기, 월 최대 30만원) / 새마을금고 앱 or 방문</li></ul></div></label>
+      <label class="check-item" data-id="c20"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">아이 명의 주택청약종합저축 개설</div><ul class="check-detail"><li>가입 기간이 청약 우선순위에 반영 → 빨리 개설할수록 유리</li><li>신청: 은행 방문 or 앱 (기본증명서·가족관계증명서 지참)</li></ul></div></label>
+      <label class="check-item" data-id="c21"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">아이 명의 증권계좌 개설 (장기 투자용)</div><ul class="check-detail"><li>미래에셋·한국투자·NH투자 등 미성년자 비대면 계좌 가능</li><li>신청: 증권사 앱 (부모 공인인증 필요) or 지점 방문</li></ul></div></label>
+      <label class="check-item" data-id="c22"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">신생아 특례대출 검토 <span class="badge-warn">⚠️ 출생 후 2년 이내</span></div><ul class="check-detail"><li>디딤돌(주택구입): 연 1.8%~4.5% / 부부합산 소득 2억 이하</li><li>버팀목(전세): 최저 연 1%대 / 최대 2.4억원, 최장 12년</li><li>신청: myhome.go.kr or 취급 은행</li></ul></div></label>
+    </div>
+  </div>
+
+  <div class="stage stage-8" id="stage8">
+    <div class="stage-header" onclick="toggleStage('stage8')"><span>8단계 · 직장인 육아 지원</span><span class="chevron">▾</span></div>
+    <div class="stage-body">
+      <label class="check-item" data-id="c24"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">출산휴가 급여</div><ul class="check-detail"><li>상한 월 220만원 (2026년) / 신청: 고용24 → 사업주 통해 신청</li></ul></div></label>
+      <label class="check-item" data-id="c25"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">부모 동시 육아휴직 특례 (6+6)</div><ul class="check-detail"><li>첫 6개월 각자 통상임금 100% (상한 월 450만원)</li><li>부모 동시 사용 가능 (기간 겹쳐도 무관) / 신청: 고용24</li></ul></div></label>
+      <label class="check-item" data-id="c26"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">육아기 근로시간 단축 급여</div><ul class="check-detail"><li>상한 월 250만원 (2026년 인상) / 신청: 고용24</li></ul></div></label>
+    </div>
+  </div>
+
+  <div class="stage stage-9" id="stage9">
+    <div class="stage-header" onclick="toggleStage('stage9')"><span>9단계 · 연말정산 시</span><span class="chevron">▾</span></div>
+    <div class="stage-body">
+      <label class="check-item" data-id="c27"><input type="checkbox"><div class="check-box"></div><div class="check-content"><div class="check-title">산후조리원 비용 세액공제</div><ul class="check-detail"><li>총 비용의 15% (한도 200만원 → 최대 30만원 환급)</li><li>⚠️ 산후조리원 영수증(세금계산서) 반드시 보관</li></ul></div></label>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📋 신청 완료 기록</div>
+    <table class="record-table">
+      <thead><tr><th>날짜</th><th>항목</th><th>금액</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>2026.04.14</td><td>국민행복카드 발급</td><td>100만원</td><td></td></tr>
+        <tr><td>2026.04.14</td><td>우체국 보험 (무료)</td><td>최대 100만원</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔗 주요 링크</div>
+    <ul class="link-list">
+      <li>정부24: <a href="https://www.gov.kr" target="_blank">www.gov.kr</a></li>
+      <li>고용24: <a href="https://www.work24.go.kr" target="_blank">www.work24.go.kr</a></li>
+      <li>한전 ON: <a href="https://cyber.kepco.co.kr" target="_blank">cyber.kepco.co.kr</a></li>
+      <li>주택도시기금 (신생아 특례대출): <a href="https://www.myhome.go.kr" target="_blank">www.myhome.go.kr</a></li>
+      <li>지역별 출산지원금: <a href="https://www.gov.kr/portal/onestopSvc/happyBirthLocalBirth" target="_blank">gov.kr 지역별 출산지원금</a></li>
+      <li>복지로 (산후도우미): <a href="https://www.bokjiro.go.kr" target="_blank">www.bokjiro.go.kr</a></li>
+      <li>위택스: <a href="https://www.wetax.go.kr" target="_blank">www.wetax.go.kr</a></li>
+    </ul>
+  </div>
+
+</div>
+<script>
+function toggleStage(id) { document.getElementById(id).classList.toggle('collapsed'); }
+const STORAGE_KEY = 'pregnancy_checklist_2026';
+function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; } }
+function saveState(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+function updateProgress() {
+  const items = document.querySelectorAll('.check-item[data-id]');
+  const done = document.querySelectorAll('.check-item.checked').length;
+  const pct = items.length ? Math.round(done / items.length * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = done + ' / ' + items.length + ' 완료 (' + pct + '%)';
+}
+const state = loadState();
+document.querySelectorAll('.check-item[data-id]').forEach(item => {
+  const id = item.dataset.id;
+  const box = item.querySelector('.check-box');
+  if (state[id] === true && !item.classList.contains('checked')) {
+    item.classList.add('checked'); box.textContent = '✓';
+  }
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    const isChecked = item.classList.toggle('checked');
+    box.textContent = isChecked ? '✓' : '';
+    state[id] = isChecked; saveState(state); updateProgress();
+  });
+});
+updateProgress();
+</script>
+</body>
+</html>
