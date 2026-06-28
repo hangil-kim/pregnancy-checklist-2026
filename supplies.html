@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>출산 준비용품 체크리스트 (2026)</title>
+<style>
+  :root {
+    --pink:#f472b6; --pink-light:#fdf2f8; --pink-mid:#fbcfe8;
+    --green:#10b981; --orange:#f59e0b; --carrot:#f97316; --blue:#3b82f6; --gray:#6b7280; --border:#e5e7eb;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif; background:#fdf2f8; color:#1f2937; line-height:1.6; font-size:15px; }
+  .header { background:linear-gradient(135deg,#f472b6,#a855f7); color:white; padding:30px 24px; text-align:center; }
+  .header h1 { font-size:22px; font-weight:700; margin-bottom:6px; }
+  .header p { font-size:13px; opacity:.9; }
+  .container { max-width:880px; margin:0 auto; padding:20px 16px 60px; }
+  .panel { background:white; border-radius:16px; padding:16px 20px; margin-bottom:16px; box-shadow:0 1px 6px rgba(0,0,0,.07); }
+  .progress-bar-bg { background:#f3f4f6; border-radius:99px; height:10px; margin:8px 0 4px; }
+  .progress-bar { background:linear-gradient(90deg,#f472b6,#a855f7); height:10px; border-radius:99px; width:0; transition:width .3s; }
+  .progress-text { font-size:12px; color:var(--gray); text-align:right; }
+  .legend { font-size:12px; color:var(--gray); margin-top:8px; }
+  .filter-row { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; align-items:center; }
+  .flabel { font-size:12px; color:var(--gray); font-weight:700; margin-right:2px; }
+  .fbtn { border:1px solid var(--border); background:#fafafa; color:var(--gray); font-size:13px; padding:6px 14px; border-radius:20px; cursor:pointer; font-weight:600; }
+  .fbtn.active { background:var(--pink); color:white; border-color:var(--pink); }
+  .resetbtn { background:none; border:1px solid var(--border); color:var(--gray); font-size:12px; padding:6px 12px; border-radius:20px; cursor:pointer; margin-left:auto; }
+  .stage { background:white; border-radius:16px; margin-bottom:14px; box-shadow:0 1px 6px rgba(0,0,0,.07); overflow:hidden; }
+  .stage-header { padding:14px 20px; font-weight:700; font-size:15px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; user-select:none; }
+  .stage-1 .stage-header { background:#fce7f3; color:#9d174d; }
+  .stage-2 .stage-header { background:#dbeafe; color:#1e40af; }
+  .stage-3 .stage-header { background:#ede9fe; color:#5b21b6; }
+  .stage-4 .stage-header { background:#fef3c7; color:#92400e; }
+  .stage-5 .stage-header { background:#d1fae5; color:#065f46; }
+  .stage-body { padding:4px 16px 12px; }
+  .colhead { display:flex; gap:8px; padding:6px 0 2px; font-size:11px; color:#9ca3af; font-weight:600; }
+  .colhead .ha { flex:0 0 calc(30% + 32px); } .colhead .hb { flex:0 0 58px; } .colhead .hc { flex:0 0 62px; }
+  .row { display:flex; align-items:center; gap:8px; padding:9px 0; border-bottom:1px solid #f3f4f6; }
+  .row:last-child { border-bottom:none; }
+  .check-box { width:22px; height:22px; min-width:22px; border:2px solid #d1d5db; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; font-size:13px; color:white; }
+  .row.checked .check-box { background:var(--green); border-color:var(--green); }
+  .name { flex:0 0 30%; font-weight:600; font-size:14px; }
+  .row.checked .name { text-decoration:line-through; color:#9ca3af; }
+  .badge-pick { display:inline-block; background:#fdf2f8; color:#be185d; font-size:10px; padding:1px 5px; border-radius:20px; margin-left:4px; font-weight:600; }
+  .badge-opt { display:inline-block; background:#f3f4f6; color:#6b7280; font-size:10px; padding:1px 5px; border-radius:20px; margin-left:4px; font-weight:600; }
+  .tbadge { flex:0 0 58px; text-align:center; font-size:11px; font-weight:700; padding:3px 0; border-radius:20px; }
+  .t-pre { background:#fce7f3; color:#9d174d; } .t-post { background:#dbeafe; color:#1e40af; } .t-q { background:#fef3c7; color:#92400e; }
+  .sbadge { flex:0 0 62px; text-align:center; font-size:11px; font-weight:700; padding:3px 0; border-radius:20px; cursor:pointer; user-select:none; border:1px solid transparent; }
+  .s-c { background:#fff7ed; color:#c2410c; border-color:#fed7aa; } .s-n { background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }
+  .note { flex:1; border:1px solid var(--border); border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit; background:#fafafa; color:#374151; min-width:70px; }
+  .note:focus { outline:none; border-color:var(--pink); background:white; }
+  .note::placeholder { color:#cbd5e1; }
+  .chevron { transition:transform .2s; } .collapsed .chevron { transform:rotate(-90deg); } .collapsed .stage-body { display:none; }
+  .note-box { background:#fffbeb; border-left:3px solid var(--orange); border-radius:0 8px 8px 0; padding:12px 16px; font-size:13px; color:#78350f; margin:8px 16px 14px; }
+  .note-box b { color:#92400e; } .note-box ul { margin:6px 0 0 16px; } .note-box li { margin-bottom:5px; }
+  .hidden { display:none !important; }
+  @media(max-width:600px){ .name { flex:0 0 28%; font-size:12px; } .note { font-size:12px; } .colhead { display:none; } .tbadge,.sbadge{ font-size:10px; } }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🍼 출산 준비용품 체크리스트</h1>
+  <p>2026 · 신생아(첫째) 기준 · 비고·구매처 직접 변경 가능</p>
+</div>
+<div class="container">
+
+  <div class="panel">
+    <div style="font-weight:700;font-size:14px;color:#be185d;">준비 현황</div>
+    <div class="progress-bar-bg"><div class="progress-bar" id="bar"></div></div>
+    <div class="progress-text" id="ptext">0 / 0</div>
+    <div class="legend"><span class="tbadge t-pre" style="display:inline-block;padding:1px 7px;">출산 전</span> <span class="tbadge t-post" style="display:inline-block;padding:1px 7px;">출산 후</span> · <span class="sbadge s-c" style="display:inline-block;padding:1px 7px;">🥕 당근</span> <span class="sbadge s-n" style="display:inline-block;padding:1px 7px;">🆕 새것</span> 칸 클릭해서 변경 · 자동 저장</div>
+    <div class="filter-row">
+      <span class="flabel">시점</span>
+      <button class="fbtn active" data-t="all" onclick="setTime('all',this)">전체</button>
+      <button class="fbtn" data-t="pre" onclick="setTime('pre',this)">출산 전</button>
+      <button class="fbtn" data-t="post" onclick="setTime('post',this)">출산 후</button>
+    </div>
+    <div class="filter-row">
+      <span class="flabel">구매처</span>
+      <button class="fbtn active" data-s="all" onclick="setSrc('all',this)">전체</button>
+      <button class="fbtn" data-s="c" onclick="setSrc('c',this)">🥕 당근</button>
+      <button class="fbtn" data-s="n" onclick="setSrc('n',this)">🆕 새것</button>
+      <button class="resetbtn" onclick="resetAll()">초기화</button>
+    </div>
+  </div>
+
+  <div class="stage stage-1" id="s1"><div class="stage-header" onclick="toggle('s1')"><span>1. 가전 / 가구</span><span class="chevron">▾</span></div><div class="stage-body" id="b1"></div></div>
+  <div class="stage stage-2" id="s2"><div class="stage-header" onclick="toggle('s2')"><span>2. 의류 및 물품</span><span class="chevron">▾</span></div><div class="stage-body" id="b2"></div></div>
+  <div class="stage stage-3" id="s3"><div class="stage-header" onclick="toggle('s3')"><span>3. 수유용품 (모유 / 분유 공통)</span><span class="chevron">▾</span></div>
+    <div class="stage-body" id="b3"></div>
+    <div class="note-box">
+      <b>💡 모유 vs 분유 — 미리 사둘 것 / 나중에 살 것</b>
+      <ul>
+        <li><b>젖병 1~2개 + 소량 분유 1통</b>은 모유수유 계획이어도 미리 준비</li>
+        <li><b>분유포트·분유제조기(브레짜)·분유쉐이커</b>는 완모 시 거의 안 씀 → 수유 방식 정해진 뒤 구매</li>
+        <li><b>유축기</b>는 광진구 보건소 메델라 1개월 무료 대여 → 구매 전 대여 활용</li>
+      </ul>
+    </div>
+  </div>
+  <div class="stage stage-4" id="s4"><div class="stage-header" onclick="toggle('s4')"><span>4. 소모품</span><span class="chevron">▾</span></div><div class="stage-body" id="b4"></div></div>
+  <div class="stage stage-5" id="s5"><div class="stage-header" onclick="toggle('s5')"><span>5. 기타</span><span class="chevron">▾</span></div><div class="stage-body" id="b5"></div></div>
+
+</div>
+
+<script>
+  // [항목, flag(1=내항목/"opt"=선택/0), 기본비고, 시점("pre"/"post"/"q"), 구매처("c"=당근/"n"=새것)]
+  const data = {
+    b1: [["아기침대",0,"분리수면용 싱글침대","pre","c"],["신생아침대",0,"바퀴 달린 이동식","pre","c"],["수유의자",0,"","pre","c"],["기저귀 갈이대",0,"이케아: 스모예라(SMÅGÖRA)/굴리베르(GULLIVER)","pre","c"],
+         ["아기 물품 수납장",0,"","pre","c"],["수유등",0,"","pre","c"],["원형러그",0,"거실 — 아기 눕혀놓는 용","pre","c"],
+         ["아기 욕조",0,"목욕용","pre","c"],["아기욕조 받침대",0,"에르고","pre","c"],["아기비대",0,"욕조와 별개 항목","pre","c"],
+         ["분유 포트",0,"분유·혼합 대비","pre","c"],["가습기",0,"위생-새것","pre","n"],
+         ["공기청정기",0,"","pre","c"],["백색소음기",0,"수면 도움","pre","c"],["온습도계",0,"","pre","c"],["홈캠(베이비모니터)",0,"전·후 무관","pre","c"],
+         ["기저귀 휴지통",0,"리필봉투 함께","pre","c"],["아기 체온계(귀·이마)",0,"","pre","n"],["바운서","opt","","post","c"],
+         ["하이체어(이유식 의자)",0,"약 6개월~","post","c"],["분유제조기(브레짜 등)","opt","수유 방식 정해진 뒤","post","c"]],
+    b2: [["배냇저고리",0,"피부 직접","pre","n"],["바디수트(우주복)",0,"60~70 사이즈 5벌","pre","c"],["스와들업",0,"2벌","pre","c"],
+         ["속싸개(스와들)·겉싸개",0,"","pre","c"],["손싸개",0,"2개","pre","n"],["발싸개·모자·양말",0,"","pre","n"],["턱받이",0,"10개","pre","n"],
+         ["두상베게",0,"위생-새것","pre","n"],["옆잠베개",0,"","pre","c"],["아기 이불·침구세트",0,"","pre","c"],["방수요/방수패드",0,"","pre","c"],
+         ["천기저귀",0,"","pre","n"],["목욕수건(바스타월)",0,"","pre","n"],["목욕바구니",0,"","pre","c"],
+         ["콧물흡입기(뻥코)",0,"위생-새것","pre","n"],["손톱가위/손톱깎이 트리머",0,"","pre","n"]],
+    b3: [["젖병",0,"수유 방식 따라","pre","n"],["젖꼭지(니플)",0,"단계별 교체","pre","n"],["젖병세척솔",0,"","pre","n"],
+         ["분유쉐이커",0,"외출용 (분유·혼합 시)","pre","n"],["수유쿠션",0,"커버 세탁 가능","pre","c"],["모유저장팩",0,"수유 안정 후","post","n"],
+         ["유축기",0,"보건소 메델라 무료대여","post","n"]],
+    b4: [["기저귀(신생아용)",0,"소량만","pre","n"],["아기 물티슈",0,"","pre","n"],["가제 손수건",0,"넉넉히 30장 이상","pre","n"],["일회용 방수패드",0,"기저귀 갈이용","pre","n"],["기저귀 크림",0,"","pre","n"],
+         ["배꼽 소독용품",0,"알코올스왑·면봉","pre","n"],["젖병·식기 세제",0,"아기주방세제","pre","n"],["아기 세탁세제",0,"","pre","n"],
+         ["아기 샴푸",0,"","pre","n"],["아기 바디워시",0,"","pre","n"],["얼굴/바디 로션",0,"","pre","n"],["수유패드",0,"산모용","pre","n"],
+         ["분유",0,"보조/혼합 1통","pre","n"],["기저귀 리필봉투",0,"휴지통용","pre","n"]],
+    b5: [["보관바구니",0,"","pre","c"],["카시트",0,"안전-새것 권장, 퇴원 필수","pre","n"],
+         ["산모용품",0,"수유브라·복대·회음부 방석","pre","n"],["유모차",0,"전·후 무관","pre","c"],["아기띠",0,"외출 시작 후","post","c"],
+         ["쪽쪽이(공갈젖꼭지)",0,"수유 안정 후","post","n"],["타이니모빌",0,"초점 발달 시","post","c"],["초점책",0,"흑백 시기","post","c"],
+         ["아기체육관(플레이짐)",0,"","post","c"],["꼬꼬맘",0,"품목/브랜드 확인 필요","q","c"]]
+  };
+
+  const TLABEL = {pre:"출산 전", post:"출산 후", q:"확인"};
+  const TCLASS = {pre:"t-pre", post:"t-post", q:"t-q"};
+  const SLABEL = {c:"🥕", n:"🆕"};
+  const STORE = 'prep_checklist_v6';
+  let saved = {}; let fTime='all'; let fSrc='all';
+  try { saved = JSON.parse(localStorage.getItem(STORE)) || {}; } catch(e){ saved = {}; }
+  function persist(){ try { localStorage.setItem(STORE, JSON.stringify(saved)); } catch(e){} }
+
+  for (const key in data) {
+    const box = document.getElementById(key);
+    const ch = document.createElement('div');
+    ch.className = 'colhead';
+    ch.innerHTML = '<div class="ha">항목</div><div class="hb">시점</div><div class="hc">구매처</div><div>비고 (메모)</div>';
+    box.appendChild(ch);
+    data[key].forEach((it, i) => {
+      const [name, flag, defNote, timing, defSrc] = it;
+      const itemKey = key + '_' + i;
+      const st = saved[itemKey] || {};
+      const src = (st.src !== undefined ? st.src : defSrc);
+      const row = document.createElement('div');
+      row.className = 'row' + (st.checked ? ' checked' : '');
+      row.dataset.timing = timing; row.dataset.src = src;
+      const badge = flag === 1 ? '<span class="badge-pick">★</span>' : (flag === 'opt' ? '<span class="badge-opt">선택</span>' : '');
+      const noteVal = (st.note !== undefined ? st.note : defNote);
+      row.innerHTML = `<div class="check-box">${st.checked?'✓':''}</div>`
+        + `<div class="name">${name}${badge}</div>`
+        + `<div class="tbadge ${TCLASS[timing]}">${TLABEL[timing]}</div>`
+        + `<div class="sbadge s-${src}" title="클릭해서 당근/새것 변경">${SLABEL[src]}</div>`
+        + `<input class="note" placeholder="메모…" value="${noteVal.replace(/"/g,'&quot;')}">`;
+      const cbox = row.querySelector('.check-box');
+      cbox.addEventListener('click', () => {
+        const now = !row.classList.contains('checked');
+        row.classList.toggle('checked', now);
+        cbox.textContent = now ? '✓' : '';
+        saved[itemKey] = {...(saved[itemKey]||{}), checked: now};
+        persist(); updateProgress();
+      });
+      const sb = row.querySelector('.sbadge');
+      sb.addEventListener('click', () => {
+        const next = row.dataset.src === 'c' ? 'n' : 'c';
+        row.dataset.src = next;
+        sb.className = 'sbadge s-' + next; sb.textContent = SLABEL[next];
+        saved[itemKey] = {...(saved[itemKey]||{}), src: next};
+        persist(); applyFilter();
+      });
+      const inp = row.querySelector('.note');
+      inp.addEventListener('input', () => { saved[itemKey] = {...(saved[itemKey]||{}), note: inp.value}; persist(); });
+      box.appendChild(row);
+    });
+  }
+
+  function toggle(sid){ document.getElementById(sid).classList.toggle('collapsed'); }
+  function setTime(f, btn){ fTime=f; document.querySelectorAll('[data-t]').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); applyFilter(); }
+  function setSrc(f, btn){ fSrc=f; document.querySelectorAll('[data-s]').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); applyFilter(); }
+  function applyFilter(){
+    document.querySelectorAll('.row').forEach(r=>{
+      const t=r.dataset.timing, s=r.dataset.src;
+      const okT = fTime==='all' || (fTime==='pre'&&t==='pre') || (fTime==='post'&&(t==='post'||t==='q'));
+      const okS = fSrc==='all' || fSrc===s;
+      r.classList.toggle('hidden', !(okT&&okS));
+    });
+  }
+  function updateProgress(){
+    const all = document.querySelectorAll('.row').length;
+    const done = document.querySelectorAll('.row.checked').length;
+    document.getElementById('bar').style.width = (done/all*100)+'%';
+    document.getElementById('ptext').textContent = done+' / '+all;
+  }
+  function resetAll(){ if(!confirm('체크·비고·구매처 설정을 모두 초기화할까요?')) return; saved={}; persist(); location.reload(); }
+  updateProgress();
+</script>
+</body>
+</html>
