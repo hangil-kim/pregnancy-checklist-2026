@@ -68,6 +68,7 @@
     <div style="font-weight:700;font-size:14px;color:#be185d;">준비 현황</div>
     <div class="progress-bar-bg"><div class="progress-bar" id="bar"></div></div>
     <div class="progress-text" id="ptext">0 / 0</div>
+    <div class="progress-text" id="sync" style="margin-top:2px;font-weight:600;">⏳ 구글 시트 불러오는 중…</div>
     <div class="legend"><span class="tbadge t-pre" style="display:inline-block;padding:1px 7px;">출산 전</span> <span class="tbadge t-post" style="display:inline-block;padding:1px 7px;">출산 후</span> · <span class="sbadge s-c" style="display:inline-block;padding:1px 7px;">🥕 당근</span> <span class="sbadge s-n" style="display:inline-block;padding:1px 7px;">🆕 새것</span> 칸 클릭해서 변경 · 자동 저장</div>
     <div class="filter-row">
       <span class="flabel">시점</span>
@@ -133,10 +134,42 @@
   const TLABEL = {pre:"출산 전", post:"출산 후", q:"확인"};
   const TCLASS = {pre:"t-pre", post:"t-post", q:"t-q"};
   const SLABEL = {c:"🥕", n:"🆕"};
-  const STORE = 'prep_checklist_v6';
+  const STORE = 'prep_supplies_sync_v1';
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxm7gAbcSusZ_xPZh13vvCcfocDqNcsZYQkowPktOEXGr2A25A5JqEq5fsojDXChpzr/exec';
   let saved = {}; let fTime='all'; let fSrc='all';
+  const reg = {}; // 항목명 -> 원격 상태 적용 함수
   try { saved = JSON.parse(localStorage.getItem(STORE)) || {}; } catch(e){ saved = {}; }
   function persist(){ try { localStorage.setItem(STORE, JSON.stringify(saved)); } catch(e){} }
+
+  function setSync(state){
+    const el = document.getElementById('sync');
+    if(!el) return;
+    const map = {
+      loading:['⏳ 구글 시트 불러오는 중…','#6b7280'],
+      ok:['✅ 구글 시트 동기화 켜짐 (부부 공유)','#059669'],
+      saved:['✅ 저장됨','#059669'],
+      offline:['⚠️ 시트 연결 안 됨 — 이 기기에만 저장','#b45309']
+    };
+    el.textContent = map[state][0]; el.style.color = map[state][1];
+  }
+  function saveRemote(name){
+    const s = saved[name] || {};
+    fetch(SHEET_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({key:name, checked: !!s.checked, note: s.note||'', src: s.src||''})
+    }).then(()=>setSync('saved')).catch(()=>setSync('offline'));
+  }
+  function loadRemote(){
+    setSync('loading');
+    fetch(SHEET_URL).then(r=>r.json()).then(remote=>{
+      for (const name in remote){
+        saved[name] = {...(saved[name]||{}), ...remote[name]};
+        if (reg[name]) reg[name](remote[name]);
+      }
+      persist(); applyFilter(); updateProgress(); setSync('ok');
+    }).catch(()=>setSync('offline'));
+  }
 
   for (const key in data) {
     const box = document.getElementById(key);
@@ -144,15 +177,14 @@
     ch.className = 'colhead';
     ch.innerHTML = '<div class="ha">항목</div><div class="hb">시점</div><div class="hc">구매처</div><div>비고 (메모)</div>';
     box.appendChild(ch);
-    data[key].forEach((it, i) => {
+    data[key].forEach((it) => {
       const [name, flag, defNote, timing, defSrc] = it;
-      const itemKey = key + '_' + i;
-      const st = saved[itemKey] || {};
+      const st = saved[name] || {};
       const src = (st.src !== undefined ? st.src : defSrc);
       const row = document.createElement('div');
       row.className = 'row' + (st.checked ? ' checked' : '');
       row.dataset.timing = timing; row.dataset.src = src;
-      const badge = flag === 1 ? '<span class="badge-pick">★</span>' : (flag === 'opt' ? '<span class="badge-opt">선택</span>' : '');
+      const badge = flag === 'opt' ? '<span class="badge-opt">선택</span>' : '';
       const noteVal = (st.note !== undefined ? st.note : defNote);
       row.innerHTML = `<div class="check-box">${st.checked?'✓':''}</div>`
         + `<div class="name">${name}${badge}</div>`
@@ -164,19 +196,28 @@
         const now = !row.classList.contains('checked');
         row.classList.toggle('checked', now);
         cbox.textContent = now ? '✓' : '';
-        saved[itemKey] = {...(saved[itemKey]||{}), checked: now};
-        persist(); updateProgress();
+        saved[name] = {...(saved[name]||{}), checked: now};
+        persist(); updateProgress(); saveRemote(name);
       });
       const sb = row.querySelector('.sbadge');
       sb.addEventListener('click', () => {
         const next = row.dataset.src === 'c' ? 'n' : 'c';
         row.dataset.src = next;
         sb.className = 'sbadge s-' + next; sb.textContent = SLABEL[next];
-        saved[itemKey] = {...(saved[itemKey]||{}), src: next};
-        persist(); applyFilter();
+        saved[name] = {...(saved[name]||{}), src: next};
+        persist(); applyFilter(); saveRemote(name);
       });
       const inp = row.querySelector('.note');
-      inp.addEventListener('input', () => { saved[itemKey] = {...(saved[itemKey]||{}), note: inp.value}; persist(); });
+      let noteTimer = null;
+      inp.addEventListener('input', () => {
+        saved[name] = {...(saved[name]||{}), note: inp.value}; persist();
+        clearTimeout(noteTimer); noteTimer = setTimeout(()=>saveRemote(name), 800);
+      });
+      reg[name] = function(s){
+        if(s.checked!==undefined){ row.classList.toggle('checked', !!s.checked); cbox.textContent = s.checked?'✓':''; }
+        if(s.note!==undefined && document.activeElement!==inp){ inp.value = s.note; }
+        if(s.src==='c'||s.src==='n'){ row.dataset.src=s.src; sb.className='sbadge s-'+s.src; sb.textContent=SLABEL[s.src]; }
+      };
       box.appendChild(row);
     });
   }
@@ -198,8 +239,9 @@
     document.getElementById('bar').style.width = (done/all*100)+'%';
     document.getElementById('ptext').textContent = done+' / '+all;
   }
-  function resetAll(){ if(!confirm('체크·비고·구매처 설정을 모두 초기화할까요?')) return; saved={}; persist(); location.reload(); }
+  function resetAll(){ if(!confirm('이 기기의 로컬 캐시만 초기화합니다. (구글 시트 데이터는 그대로 유지돼요. 시트까지 비우려면 구글 시트에서 직접 삭제하세요.)\\n계속할까요?')) return; saved={}; persist(); location.reload(); }
   updateProgress();
+  loadRemote();
 </script>
 </body>
 </html>
