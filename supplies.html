@@ -196,15 +196,16 @@
     if(!box || reg[name]) return;
     const st = saved[name] || {};
     const src = (st.src !== undefined ? st.src : defSrc);
+    const tm = (st.timing !== undefined && st.timing !== '') ? st.timing : timing;
     const row = document.createElement('div');
     row.className = 'row' + (st.checked ? ' checked' : '');
-    row.dataset.timing = timing; row.dataset.src = src;
+    row.dataset.timing = tm; row.dataset.src = src;
     const badge = flag === 'opt' ? '<span class="badge-opt">선택</span>' : '';
     const delBtn = isCustom ? '<span class="del" title="삭제">✕</span>' : '';
     const noteVal = (st.note !== undefined ? st.note : defNote);
     row.innerHTML = `<div class="check-box">${st.checked?'✓':''}</div>`
       + `<div class="name">${name}${badge}</div>`
-      + `<div class="tbadge ${TCLASS[timing]}">${TLABEL[timing]}</div>`
+      + `<div class="tbadge ${TCLASS[tm]}" title="클릭해서 시점 변경">${TLABEL[tm]}</div>`
       + `<div class="sbadge s-${src}" title="클릭해서 당근/새것 변경">${SLABEL[src]}</div>`
       + `<input class="note" placeholder="메모…" value="${noteVal.replace(/"/g,'&quot;')}">`
       + delBtn;
@@ -215,6 +216,15 @@
       cbox.textContent = now ? '✓' : '';
       saved[name] = {...(saved[name]||{}), checked: now};
       persist(); updateProgress(); saveRemote(name);
+    });
+    const tb = row.querySelector('.tbadge');
+    tb.style.cursor = 'pointer';
+    tb.addEventListener('click', () => {
+      const next = row.dataset.timing === 'pre' ? 'post' : 'pre';
+      row.dataset.timing = next;
+      tb.className = 'tbadge ' + TCLASS[next]; tb.textContent = TLABEL[next];
+      saved[name] = {...(saved[name]||{}), timing: next};
+      persist(); applyFilter(); saveRemote(name);
     });
     const sb = row.querySelector('.sbadge');
     sb.addEventListener('click', () => {
@@ -241,6 +251,7 @@
       if(s.checked!==undefined){ row.classList.toggle('checked', !!s.checked); cbox.textContent = s.checked?'✓':''; }
       if(s.note!==undefined && document.activeElement!==inp){ inp.value = s.note; }
       if(s.src==='c'||s.src==='n'){ row.dataset.src=s.src; sb.className='sbadge s-'+s.src; sb.textContent=SLABEL[s.src]; }
+      if(s.timing==='pre'||s.timing==='post'||s.timing==='q'){ row.dataset.timing=s.timing; tb.className='tbadge '+TCLASS[s.timing]; tb.textContent=TLABEL[s.timing]; }
     };
     const form = box.querySelector('.addbox');
     if(form) box.insertBefore(row, form); else box.appendChild(row);

@@ -1,1 +1,4 @@
 publish.command
+auto-publish.sh
+자동발행_설치.command
+.autopublish.log
