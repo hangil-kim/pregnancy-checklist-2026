@@ -59,8 +59,10 @@
   .add-name:focus { outline:none; border-style:solid; }
   .add-time, .add-src { border:1px solid var(--border); border-radius:8px; padding:7px 8px; font-size:12px; font-family:inherit; background:#fafafa; }
   .add-btn { background:var(--pink); color:#fff; border:none; border-radius:8px; padding:8px 16px; font-size:13px; font-weight:700; cursor:pointer; }
-  .del { color:#cbd5e1; cursor:pointer; font-weight:700; padding:0 2px 0 4px; flex:0 0 auto; font-size:13px; }
+  .del { color:#cbd5e1; cursor:pointer; font-weight:700; padding:0 2px 0 2px; flex:0 0 auto; font-size:13px; }
   .del:hover { color:#ef4444; }
+  .edit { cursor:pointer; padding:0 1px 0 4px; flex:0 0 auto; font-size:12px; opacity:.55; }
+  .edit:hover { opacity:1; }
   @media(max-width:600px){ .name { flex:0 0 28%; font-size:12px; } .note { font-size:12px; } .colhead { display:none; } .tbadge,.sbadge{ font-size:10px; } }
 </style>
 </head>
@@ -145,6 +147,7 @@
   const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxm7gAbcSusZ_xPZh13vvCcfocDqNcsZYQkowPktOEXGr2A25A5JqEq5fsojDXChpzr/exec';
   let saved = {}; let fTime='all'; let fSrc='all';
   const reg = {}; // 항목명 -> 원격 상태 적용 함수
+  const els = {}; // 항목명 -> 행 DOM
   try { saved = JSON.parse(localStorage.getItem(STORE)) || {}; } catch(e){ saved = {}; }
   function persist(){ try { localStorage.setItem(STORE, JSON.stringify(saved)); } catch(e){} }
 
@@ -168,11 +171,11 @@
                             cat: s.cat||'', timing: s.timing||'', custom: !!s.custom})
     }).then(()=>setSync('saved')).catch(()=>setSync('offline'));
   }
-  function deleteRemote(name){
+  function deleteRemote(name, hard){
     fetch(SHEET_URL, {
       method:'POST', mode:'no-cors',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({key:name, action:'delete'})
+      body: JSON.stringify({key:name, action:'delete', hard: !!hard})
     }).then(()=>setSync('saved')).catch(()=>setSync('offline'));
   }
   function loadRemote(){
@@ -181,6 +184,7 @@
       for (const name in remote){
         const r = remote[name];
         saved[name] = {...(saved[name]||{}), ...r};
+        if (r.deleted){ if(reg[name]) removeRow(name); continue; }
         if (reg[name]) { reg[name](r); }
         else if (r.custom) {
           makeRow(r.cat||'b5', name, 0, r.note||'', r.timing||'pre', (r.src==='c'||r.src==='n')?r.src:'n', true);
@@ -201,7 +205,7 @@
     row.className = 'row' + (st.checked ? ' checked' : '');
     row.dataset.timing = tm; row.dataset.src = src;
     const badge = flag === 'opt' ? '<span class="badge-opt">선택</span>' : '';
-    const delBtn = isCustom ? '<span class="del" title="삭제">✕</span>' : '';
+    const delBtn = '<span class="edit" title="이름 변경">✏️</span><span class="del" title="삭제">✕</span>';
     const noteVal = (st.note !== undefined ? st.note : defNote);
     row.innerHTML = `<div class="check-box">${st.checked?'✓':''}</div>`
       + `<div class="name">${name}${badge}</div>`
@@ -240,13 +244,16 @@
       saved[name] = {...(saved[name]||{}), note: inp.value}; persist();
       clearTimeout(noteTimer); noteTimer = setTimeout(()=>saveRemote(name), 800);
     });
-    if(isCustom){
-      row.querySelector('.del').addEventListener('click', () => {
-        if(!confirm(`"${name}" 항목을 삭제할까요? (공유 시트에서도 삭제됩니다)`)) return;
-        delete saved[name]; delete reg[name]; persist();
-        row.remove(); updateProgress(); deleteRemote(name);
-      });
-    }
+    els[name] = row;
+    row.querySelector('.del').addEventListener('click', () => {
+      if(!confirm(`"${name}" 항목을 삭제할까요? (공유 시트에서도 반영됩니다)`)) return;
+      const wasCustom = !!(saved[name] && saved[name].custom) || isCustom;
+      removeRow(name);
+      if(wasCustom){ delete saved[name]; deleteRemote(name, true); }
+      else { saved[name] = {...(saved[name]||{}), deleted:true}; deleteRemote(name, false); }
+      persist(); updateProgress();
+    });
+    row.querySelector('.edit').addEventListener('click', () => renameItem(name, isCustom));
     reg[name] = function(s){
       if(s.checked!==undefined){ row.classList.toggle('checked', !!s.checked); cbox.textContent = s.checked?'✓':''; }
       if(s.note!==undefined && document.activeElement!==inp){ inp.value = s.note; }
@@ -256,6 +263,36 @@
     const form = box.querySelector('.addbox');
     if(form) box.insertBefore(row, form); else box.appendChild(row);
     return row;
+  }
+
+  function removeRow(name){
+    if(els[name]){ els[name].remove(); delete els[name]; }
+    delete reg[name];
+  }
+
+  function renameItem(oldName, oldIsCustom){
+    const input = prompt('새 항목 이름:', oldName);
+    if(input===null) return;
+    const newName = input.trim();
+    if(!newName || newName===oldName) return;
+    if(reg[newName]){ alert('같은 이름의 항목이 이미 있어요.'); return; }
+    const oldRow = els[oldName];
+    const cat = oldRow ? oldRow.closest('.stage-body').id : 'b5';
+    const timing = oldRow ? oldRow.dataset.timing : 'pre';
+    const src = oldRow ? oldRow.dataset.src : 'n';
+    const checked = oldRow ? oldRow.classList.contains('checked') : false;
+    const noteEl = oldRow ? oldRow.querySelector('.note') : null;
+    const note = noteEl ? noteEl.value : ((saved[oldName]&&saved[oldName].note)||'');
+    const wasCustom = !!(saved[oldName] && saved[oldName].custom) || oldIsCustom;
+    // 새 이름으로 항목 생성(상태 복사)
+    saved[newName] = {checked, note, src, cat, timing, custom:true};
+    makeRow(cat, newName, 0, note, timing, src, true);
+    saveRemote(newName);
+    // 기존 항목 제거(기본=삭제표시 / 커스텀=완전삭제)
+    removeRow(oldName);
+    if(wasCustom){ delete saved[oldName]; deleteRemote(oldName, true); }
+    else { saved[oldName] = {...(saved[oldName]||{}), deleted:true}; deleteRemote(oldName, false); }
+    persist(); updateProgress(); applyFilter();
   }
 
   for (const key in data) {
@@ -288,6 +325,7 @@
     nameInp.addEventListener('keydown', e=>{ if(e.key==='Enter') doAdd(); });
     data[key].forEach((it) => {
       const [name, flag, defNote, timing, defSrc] = it;
+      if(saved[name] && saved[name].deleted) return;
       makeRow(key, name, flag, defNote, timing, defSrc, false);
     });
   }
